@@ -63,22 +63,55 @@ ALTER TABLE public.guest_bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lost_and_found ENABLE ROW LEVEL SECURITY;
 
 -- Base Policy: Allow anyone with a valid login to READ non-sensitive data
+DROP POLICY IF EXISTS "Allow authenticated read access on menu" ON public.weekly_menu;
 CREATE POLICY "Allow authenticated read access on menu" ON public.weekly_menu FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated read access on waste" ON public.food_waste;
 CREATE POLICY "Allow authenticated read access on waste" ON public.food_waste FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated read access on lost items" ON public.lost_and_found;
 CREATE POLICY "Allow authenticated read access on lost items" ON public.lost_and_found FOR SELECT TO authenticated USING (true);
 
 -- User Policies: Users can read and update their OWN data
+DROP POLICY IF EXISTS "Users can read own profile" ON public.users;
 CREATE POLICY "Users can read own profile" ON public.users FOR SELECT TO authenticated USING (email = auth.jwt() ->> 'email');
+
+DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE TO authenticated USING (email = auth.jwt() ->> 'email');
 
+DROP POLICY IF EXISTS "Students can read own bookings" ON public.guest_bookings;
 CREATE POLICY "Students can read own bookings" ON public.guest_bookings FOR SELECT TO authenticated USING (student_email = auth.jwt() ->> 'email');
+
+DROP POLICY IF EXISTS "Students can insert own bookings" ON public.guest_bookings;
 CREATE POLICY "Students can insert own bookings" ON public.guest_bookings FOR INSERT TO authenticated WITH CHECK (student_email = auth.jwt() ->> 'email');
 
--- Manager Policies: Managers have full access (assuming role = 'manager' in users table)
--- Note: These policies use a subquery to verify the user's role based on their auth email.
-CREATE POLICY "Managers full access on menu" ON public.weekly_menu FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
-CREATE POLICY "Managers full access on users" ON public.users FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
-CREATE POLICY "Managers full access on attendance" ON public.attendance FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
-CREATE POLICY "Managers full access on waste" ON public.food_waste FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
-CREATE POLICY "Managers full access on bookings" ON public.guest_bookings FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
-CREATE POLICY "Managers full access on lost items" ON public.lost_and_found FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.users WHERE email = auth.jwt() ->> 'email' AND role = 'manager'));
+-- SECURITY DEFINER Function to check manager role without triggering infinite recursion
+CREATE OR REPLACE FUNCTION public.is_manager()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE email = auth.jwt() ->> 'email' 
+    AND role = 'manager'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Manager Policies: Managers have full access (using the security definer function)
+DROP POLICY IF EXISTS "Managers full access on menu" ON public.weekly_menu;
+CREATE POLICY "Managers full access on menu" ON public.weekly_menu FOR ALL TO authenticated USING (public.is_manager());
+
+DROP POLICY IF EXISTS "Managers full access on users" ON public.users;
+CREATE POLICY "Managers full access on users" ON public.users FOR ALL TO authenticated USING (public.is_manager());
+
+DROP POLICY IF EXISTS "Managers full access on attendance" ON public.attendance;
+CREATE POLICY "Managers full access on attendance" ON public.attendance FOR ALL TO authenticated USING (public.is_manager());
+
+DROP POLICY IF EXISTS "Managers full access on waste" ON public.food_waste;
+CREATE POLICY "Managers full access on waste" ON public.food_waste FOR ALL TO authenticated USING (public.is_manager());
+
+DROP POLICY IF EXISTS "Managers full access on bookings" ON public.guest_bookings;
+CREATE POLICY "Managers full access on bookings" ON public.guest_bookings FOR ALL TO authenticated USING (public.is_manager());
+
+DROP POLICY IF EXISTS "Managers full access on lost items" ON public.lost_and_found;
+CREATE POLICY "Managers full access on lost items" ON public.lost_and_found FOR ALL TO authenticated USING (public.is_manager());
