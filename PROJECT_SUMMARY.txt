@@ -1,0 +1,153 @@
+Project: foodbuddy
+
+Overview:
+- A Next.js 16 application using the App Router and TypeScript.
+- Designed as a hostel/college mess management system.
+- Uses Firebase for authentication, Firestore, Storage, and Google sign-in support.
+- Includes role-based dashboard sections for students, managers, and authority staff.
+- Uses Tailwind CSS v4 with PostCSS and custom UI styling.
+
+Metadata:
+- Name: foodbuddy
+- Version: 0.1.0
+- Private: true
+- Main framework: Next.js 16.2.12
+- React: 19.2.4
+- TypeScript: ^5
+
+Dependencies:
+- @hookform/resolvers ^5.7.1
+- clsx ^2.1.1
+- firebase ^12.17.0
+- framer-motion ^12.43.0
+- html5-qrcode ^2.3.8
+- lucide-react ^1.28.0
+- qrcode ^1.5.4
+- react-hook-form ^7.84.0
+- recharts ^3.10.1
+- tailwind-merge ^3.6.0
+- zod ^3.25.76
+
+Dev Dependencies:
+- @tailwindcss/postcss ^4
+- @types/node ^20
+- @types/qrcode ^1.5.6
+- @types/react ^19
+- @types/react-dom ^19
+- eslint ^9
+- eslint-config-next 16.2.12
+- tailwindcss ^4
+- typescript ^5
+
+Project Files and Behavior:
+- app/page.tsx
+  - Redirects to /login.
+- app/layout.tsx
+  - Sets HTML metadata and includes global CSS.
+  - Uses the Inter font and loads Material Symbols Outlined.
+- app/globals.css
+  - Global styles for the app.
+- lib/firebase.ts
+  - Initializes Firebase with the live project configuration.
+  - Exports: app, storage, auth, googleProvider, db, firebaseConfig.
+  - Firebase project ID: mess-managment-b6ac8
+  - Auth domain: mess-managment-b6ac8.firebaseapp.com
+
+Login and Authentication:
+- app/login/page.tsx
+  - Client-side login page.
+  - Uses Firebase email/password sign-in.
+  - Fetches the `users` document from Firestore to determine role.
+  - Routes users by role:
+    - student -> /student
+    - manager -> /manager
+    - authority or warden -> /authority
+
+Student Section:
+- app/student/page.tsx
+  - Student dashboard with welcome text and greeting.
+  - Reads student name from Firestore on auth state change.
+  - Includes links to attendance, hygiene, menu, notices, rating, staff review, suggestions, complaints, and track complaints.
+- app/student/attendance/page.tsx
+- app/student/hygiene/page.tsx
+- app/student/menu/page.tsx
+- app/student/notices/page.tsx
+- app/student/rate-food/page.tsx
+- app/student/staff-review/page.tsx
+- app/student/suggestions/page.tsx
+- app/student/raise-complaint/page.tsx
+- app/student/track-complaints/page.tsx
+
+Manager Section:
+- app/manager/page.tsx
+  - Manager dashboard with overview cards and attendance reporting.
+  - Provides UI for report generation and live session attendance.
+- app/manager/attendance/page.tsx
+- app/manager/complaints/page.tsx
+- app/manager/hygiene/page.tsx
+- app/manager/menu/page.tsx
+- app/manager/notices/page.tsx
+
+Authority Section:
+- app/authority/page.tsx
+  - Authority dashboard layout.
+- app/authority/layout.tsx
+  - Authority section layout wrapper.
+- app/authority/enroll-user/page.tsx
+- app/authority/complaints-overview/page.tsx
+- app/authority/ratings-overview/page.tsx
+- app/authority/staff-ratings/page.tsx
+- app/authority/users/page.tsx
+
+Configuration Files:
+- next.config.ts
+  - Default Next.js config object with no custom config options yet.
+- eslint.config.mjs
+  - Extends Next.js recommended and TypeScript configs.
+  - Protects default ignore patterns and includes .next, out, build, and next-env.d.ts.
+- postcss.config.mjs
+  - Configures @tailwindcss/postcss plugin.
+- tsconfig.json
+  - TypeScript configuration for the project.
+- seed.mjs
+  - Project seed script file present at root.
+
+How to run:
+- npm run dev
+- npm run build
+- npm start
+- npm run lint
+
+Route Structure:
+- /login
+- /student
+- /student/attendance
+- /student/hygiene
+- /student/menu
+- /student/notices
+- /student/rate-food
+- /student/staff-review
+- /student/suggestions
+- /student/raise-complaint
+- /student/track-complaints
+- /manager
+- /manager/attendance
+- /manager/complaints
+- /manager/hygiene
+- /manager/menu
+- /manager/notices
+- /authority
+- /authority/enroll-user
+- /authority/complaints-overview
+- /authority/ratings-overview
+- /authority/staff-ratings
+- /authority/users
+
+Additional Notes:
+- The app uses a modern Tailwind UI style with glass panels and 3D card effects.
+- Firebase configuration is hard-coded in `lib/firebase.ts` and should be secured before production.
+- The README is the default Next.js starter README and does not yet describe the app-specific features.
+- There is a `.git` directory and `node_modules` installed in the workspace.
+
+Summary:
+This is a Firebase-backed mess management system for students, managers, and authority users. The app is built on Next.js App Router, uses TypeScript, Tailwind CSS, and provides role-based dashboards, QR attendance workflows, feedback forms, menu displays, complaints tracking, hygiene reporting, and notices.
