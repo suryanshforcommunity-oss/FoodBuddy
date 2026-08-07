@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍔 FoodBuddy
 
-## Getting Started
+FoodBuddy is a comprehensive, full-stack university mess and dining hall management application. Built with modern web technologies, it bridges the gap between students, mess managers, and university wardens to ensure a smooth, transparent, and efficient dining experience.
 
-First, run the development server:
+## ✨ Features
 
+### For Students 🎓
+*   **Live Menu & Nutritional Charts**: View the daily and weekly menus. Click on any food item to see a beautiful Pie Chart breakdown of its macros (Protein, Carbs, Fats, Fiber) and total calories.
+*   **Dietary Preferences**: Set dietary restrictions and allergies in your profile.
+*   **Live Crowd Indicator**: Check real-time dining hall capacity before you walk over.
+*   **Guest Meal Bookings**: Easily book a physical meal pass for visiting friends or family.
+*   **Lost & Found Portal**: Report lost items or log items you've found in the mess.
+
+### For Managers 👨‍🍳
+*   **Menu Management**: Easily update the weekly menu, tag items as Veg/Non-Veg, and input precise nutritional data.
+*   **Food Waste Tracking**: Log daily food waste in kilograms to track and optimize kitchen efficiency.
+*   **Operations Dashboards**: Centralized hub to manage Guest Bookings and resolve Lost & Found reports.
+
+### Security First 🔒
+*   **Production Hardened**: Secured with Next.js Edge Middleware for strict route protection.
+*   **Row Level Security (RLS)**: Database completely locked down at the SQL level to prevent unauthorized data access.
+
+---
+
+## 🚀 Tech Stack
+*   **Frontend**: Next.js 14 (App Router), React, Tailwind CSS
+*   **UI Components**: Lucide Icons, Recharts (for data visualization)
+*   **Backend/Database**: Supabase (PostgreSQL), Supabase Auth
+*   **Deployment**: Vercel (Recommended)
+
+---
+
+## 🛠️ Local Development Setup
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/suryanshforcommunity-oss/FoodBuddy.git
+cd FoodBuddy
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Setup Environment Variables
+Create a `.env.local` file in the root of the project and add your Supabase credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Database Setup (Crucial!)
+To ensure all the addon features (Guest Bookings, Food Waste, Lost & Found, etc.) work correctly, you **must** apply the schema updates to your Supabase project.
 
-## Learn More
+1. Open your Supabase Dashboard.
+2. Navigate to the **SQL Editor**.
+3. Copy the entire contents of the `db_updates.sql` file provided in this repository.
+4. Run the script.
 
-To learn more about Next.js, take a look at the following resources:
+*Note: This script also includes strict Row Level Security (RLS) policies. Test thoroughly after applying.*
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 5. Start the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/suryanshforcommunity-oss/FoodBuddy/issues).
