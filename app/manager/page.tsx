@@ -56,7 +56,7 @@ export default function ManagerDashboard() {
             }
           });
           
-          setStats({ pending, critical, overdue, resolvedToday });
+          setStats(prev => ({ ...prev, pending, critical, overdue, resolvedToday }));
         }
         
         // 2. Determine current meal (No snacks)

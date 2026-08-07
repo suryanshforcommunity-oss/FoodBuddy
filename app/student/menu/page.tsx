@@ -6,14 +6,7 @@ import { LucideChevronLeft, LucideCalendarDays, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { NutritionModal, MenuItem } from "@/components/NutritionModal";
 
-interface MenuItem {
-  id: number;
-  name: string;
-  meal: string;
-  type: string;
-  calories?: number;
-  protein?: number;
-}
+
 
 export default function StudentMenuPage() {
   const [selectedDayId, setSelectedDayId] = useState(new Date().getDay() || 1);

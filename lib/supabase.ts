@@ -36,5 +36,5 @@ export async function isMessEnrolled(email: string): Promise<boolean> {
     return false;
   }
 
-  return data?.[flagCol] === true;
+  return (data as Record<string, any>)?.[flagCol] === true;
 }
