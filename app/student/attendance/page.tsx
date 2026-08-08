@@ -154,21 +154,30 @@ export default function QRScannerPage() {
       // Ignore scan errors as they happen constantly when no QR is found
     };
 
-    // Request environment camera natively. Use 'ideal' so it doesn't crash on laptops (which only have a front camera)
-    html5Qrcode
-      .start(
-        { facingMode: { ideal: "environment" } },
+    const startScanner = (facingMode: string) => {
+      return html5Qrcode.start(
+        { facingMode },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         onScanSuccess,
         onScanError
-      )
+      );
+    };
+
+    startScanner("environment")
       .then(() => {
         isScannerRunning.current = true;
       })
-      .catch((error) => {
-        console.error("Failed to start scanner:", error);
-        setStatus("error");
-        setMessage("Unable to access camera. Please ensure you have granted camera permissions.");
+      .catch((err) => {
+        console.warn("Failed environment camera, trying user camera:", err);
+        startScanner("user")
+          .then(() => {
+            isScannerRunning.current = true;
+          })
+          .catch((error) => {
+            console.error("Failed to start any scanner:", error);
+            setStatus("error");
+            setMessage("Unable to access camera. Please ensure you have granted camera permissions.");
+          });
       });
 
     return () => {
