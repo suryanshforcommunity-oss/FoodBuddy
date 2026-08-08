@@ -36,14 +36,9 @@ export default function AuthCallbackPage() {
         .single();
 
       if (userError || !userData) {
-        // First-time Google sign-in — auto-create a student profile
-        await supabase.from("users").insert({
-          uid: session.user.id,
-          name: session.user.user_metadata?.full_name ?? email.split("@")[0],
-          email,
-          role: "student",
-        });
-        router.replace("/student");
+        // User not found in our database — they must be added by the warden first.
+        await supabase.auth.signOut();
+        router.replace("/login?error=not_added");
         return;
       }
 

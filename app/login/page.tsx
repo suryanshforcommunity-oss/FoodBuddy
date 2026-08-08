@@ -76,11 +76,12 @@ export default function LoginPage() {
     }
   };
 
-  // ── Redirect from callback with domain error ───────────────────────────────
+  // ── Redirect from callback with errors ───────────────────────────────
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : null;
   const domainError = searchParams?.get("error") === "domain";
+  const notAddedError = searchParams?.get("error") === "not_added";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-4">
@@ -101,10 +102,12 @@ export default function LoginPage() {
           </p>
 
           {/* Error banner */}
-          {(error || domainError) && (
+          {(error || domainError || notAddedError) && (
             <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg mb-6 border border-destructive/20 font-medium">
               {domainError
                 ? `Only @${ALLOWED_DOMAIN} accounts are allowed. Please select your college email.`
+                : notAddedError
+                ? "Your account is not registered. Please contact your warden to get added."
                 : error}
             </div>
           )}
