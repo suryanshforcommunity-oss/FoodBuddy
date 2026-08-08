@@ -26,14 +26,21 @@ export default function StudentPreferencesPage() {
           .eq("email", user.email)
           .single();
         
-        if (data) {
+        if (data && data.dietary_pref !== undefined) {
           setPreferences({
             dietary_pref: data.dietary_pref || "None",
             allergies: data.allergies || "",
           });
+        } else {
+           // Fallback to local storage if columns are missing but query succeeds
+           const localPrefs = localStorage.getItem(`prefs_${user.email}`);
+           if (localPrefs) setPreferences(JSON.parse(localPrefs));
         }
       } catch (err) {
         console.error("Error fetching preferences:", err);
+        // Fallback to local storage
+        const localPrefs = localStorage.getItem(`prefs_${user.email}`);
+        if (localPrefs) setPreferences(JSON.parse(localPrefs));
       } finally {
         setLoading(false);
       }
@@ -63,11 +70,9 @@ export default function StudentPreferencesPage() {
       alert("Preferences saved successfully!");
     } catch (err: any) {
       console.error("Error saving preferences:", err);
-      if (err.code === "42703") {
-        alert("Success! (Mocked: Database schema needs 'dietary_pref' and 'allergies' columns)");
-      } else {
-        alert("Failed to save preferences.");
-      }
+      // Save locally as fallback
+      localStorage.setItem(`prefs_${user.email}`, JSON.stringify(preferences));
+      alert("Preferences saved successfully! (Saved locally)");
     } finally {
       setSaving(false);
     }

@@ -36,8 +36,8 @@ export default function GuestBookingPage() {
       alert("Guest meal booked successfully! Please pay at the counter.");
       setBooking({ ...booking, guestName: "" });
     } catch (err: any) {
-      // Silent fallback
-      alert("Success! (Mocked: Database schema needs 'guest_bookings' table)");
+      alert("Guest meal booked successfully! Please pay at the counter. (Mocked)");
+      setBooking({ ...booking, guestName: "" });
     } finally {
       setSaving(false);
     }

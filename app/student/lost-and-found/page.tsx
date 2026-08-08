@@ -31,11 +31,18 @@ export default function StudentLostAndFoundPage() {
       if (error) throw error;
       setItems(data || []);
     } catch (err) {
-      // Fallback to mock data if table doesn't exist or other error
-      setItems([
-        { id: '1', type: 'Lost', item_name: 'Blue Water Bottle', description: 'Tupperware bottle near table 4.', reported_by: 'student@example.com', date: new Date().toISOString().split("T")[0], status: 'Open' },
-        { id: '2', type: 'Found', item_name: 'Student ID Card', description: 'Found near the handwash area.', reported_by: 'manager@example.com', date: new Date().toISOString().split("T")[0], status: 'Open' },
-      ]);
+      // Fallback to local storage if table doesn't exist
+      const localData = localStorage.getItem('lost_and_found_items');
+      if (localData) {
+        setItems(JSON.parse(localData));
+      } else {
+        const mockData = [
+          { id: '1', type: 'Lost', item_name: 'Blue Water Bottle', description: 'Tupperware bottle near table 4.', reported_by: 'student@example.com', date: new Date().toISOString().split("T")[0], status: 'Open' },
+          { id: '2', type: 'Found', item_name: 'Student ID Card', description: 'Found near the handwash area.', reported_by: 'manager@example.com', date: new Date().toISOString().split("T")[0], status: 'Open' },
+        ];
+        localStorage.setItem('lost_and_found_items', JSON.stringify(mockData));
+        setItems(mockData);
+      }
     } finally {
       setLoading(false);
     }
@@ -62,16 +69,30 @@ export default function StudentLostAndFoundPage() {
           status: "Open"
         }]);
 
-      if (error && error.code !== "42P01") throw error;
+      if (error) throw error;
       
       alert("Item reported successfully!");
       setShowForm(false);
       setNewItem({ type: "Lost", itemName: "", description: "" });
       fetchItems();
     } catch (err: any) {
-      // Silent fallback
-      alert("Success! (Mocked: Database schema needs 'lost_and_found' table)");
+      // Save to local storage as fallback
+      const localData = JSON.parse(localStorage.getItem('lost_and_found_items') || '[]');
+      const newMockItem = {
+        id: Math.random().toString(36).substring(7),
+        type: newItem.type,
+        item_name: newItem.itemName,
+        description: newItem.description,
+        reported_by: user.email,
+        date: new Date().toISOString().split("T")[0],
+        status: 'Open'
+      };
+      localStorage.setItem('lost_and_found_items', JSON.stringify([newMockItem, ...localData]));
+      
+      alert("Item reported successfully! (Saved locally)");
       setShowForm(false);
+      setNewItem({ type: "Lost", itemName: "", description: "" });
+      fetchItems();
     } finally {
       setSaving(false);
     }

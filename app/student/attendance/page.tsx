@@ -154,36 +154,21 @@ export default function QRScannerPage() {
       // Ignore scan errors as they happen constantly when no QR is found
     };
 
-    Html5Qrcode.getCameras()
-      .then((devices) => {
-        if (!devices || devices.length === 0) {
-          throw new Error("No cameras found");
-        }
-
-        const cameraId = devices[0].id;
-
-        // Guard: bail out if this effect's instance was superseded (StrictMode
-        // double-invoke) or the DOM node is gone. Comparing by reference ensures
-        // only the LATEST instance proceeds, preventing the double-camera feed.
-        if (html5QrcodeRef.current !== html5Qrcode || !document.getElementById("reader")) {
-          return;
-        }
-
-        html5Qrcode
-          .start(cameraId, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, onScanError)
-          .then(() => {
-            isScannerRunning.current = true;
-          })
-          .catch((error) => {
-            console.error("Failed to start scanner:", error);
-            setStatus("error");
-            setMessage("Unable to access camera.");
-          });
+    // Request environment camera directly which prompts for permission automatically
+    html5Qrcode
+      .start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess,
+        onScanError
+      )
+      .then(() => {
+        isScannerRunning.current = true;
       })
       .catch((error) => {
-        console.error("Camera init error:", error);
+        console.error("Failed to start scanner:", error);
         setStatus("error");
-        setMessage("No camera available.");
+        setMessage("Unable to access camera. Please ensure you have granted camera permissions.");
       });
 
     return () => {
