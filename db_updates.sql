@@ -88,14 +88,14 @@ CREATE POLICY "Students can read own bookings" ON public.guest_bookings FOR SELE
 DROP POLICY IF EXISTS "Students can insert own bookings" ON public.guest_bookings;
 CREATE POLICY "Students can insert own bookings" ON public.guest_bookings FOR INSERT TO authenticated WITH CHECK (student_email = auth.jwt() ->> 'email');
 
--- SECURITY DEFINER Function to check manager role without triggering infinite recursion
+-- SECURITY DEFINER Function to check manager/authority role without triggering infinite recursion
 CREATE OR REPLACE FUNCTION public.is_manager()
 RETURNS boolean AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.users 
     WHERE email = auth.jwt() ->> 'email' 
-    AND role = 'manager'
+    AND role IN ('manager', 'authority', 'warden')
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
