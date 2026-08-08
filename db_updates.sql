@@ -79,6 +79,9 @@ CREATE POLICY "Users can read own profile" ON public.users FOR SELECT TO authent
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE TO authenticated USING (email = auth.jwt() ->> 'email');
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.users;
+CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT TO authenticated WITH CHECK (email = auth.jwt() ->> 'email');
+
 DROP POLICY IF EXISTS "Students can read own bookings" ON public.guest_bookings;
 CREATE POLICY "Students can read own bookings" ON public.guest_bookings FOR SELECT TO authenticated USING (student_email = auth.jwt() ->> 'email');
 
