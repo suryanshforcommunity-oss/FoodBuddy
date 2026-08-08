@@ -154,10 +154,10 @@ export default function QRScannerPage() {
       // Ignore scan errors as they happen constantly when no QR is found
     };
 
-    // Request environment camera directly which prompts for permission automatically
+    // Request environment camera natively. Use 'ideal' so it doesn't crash on laptops (which only have a front camera)
     html5Qrcode
       .start(
-        { facingMode: "environment" },
+        { facingMode: { ideal: "environment" } },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         onScanSuccess,
         onScanError
